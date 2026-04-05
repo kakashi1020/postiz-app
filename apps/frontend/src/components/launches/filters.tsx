@@ -9,6 +9,15 @@ import { useT } from '@gitroom/react/translation/get.transation.service.client';
 import i18next from 'i18next';
 import { newDayjs } from '@gitroom/frontend/components/layout/set.timezone';
 
+const FUNNEL_STAGES = ['TOFU', 'MOFU', 'BOFU'] as const;
+
+const MARKET_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
+  PH: { label: 'PH', color: 'text-blue-600', bg: 'bg-blue-500' },
+  KR: { label: 'KR', color: 'text-green-600', bg: 'bg-green-500' },
+  SG: { label: 'SG', color: 'text-orange-600', bg: 'bg-orange-500' },
+  MY: { label: 'MY', color: 'text-purple-600', bg: 'bg-purple-500' },
+};
+
 // Helper function to get start and end dates based on display type
 function getDateRange(
   display: 'day' | 'week' | 'month' | 'list',
@@ -401,6 +410,52 @@ export const Filters = () => {
         onChange={(customer: string) => setCustomer(customer)}
         integrations={calendar.integrations}
       />
+      <div className="flex flex-row p-[4px] border border-newTableBorder rounded-[8px] text-[14px] font-[500]">
+        {FUNNEL_STAGES.map((stage) => (
+          <div
+            key={stage}
+            className={clsx(
+              'pt-[6px] pb-[5px] cursor-pointer w-[60px] text-center rounded-[6px]',
+              calendar.funnelStage === stage && 'text-textItemFocused bg-boxFocused'
+            )}
+            onClick={() => {
+              calendar.setFilters({
+                startDate: calendar.startDate,
+                endDate: calendar.endDate,
+                display: calendar.display as 'day' | 'week' | 'month' | 'list',
+                customer: calendar.customer,
+                funnelStage: calendar.funnelStage === stage ? null : stage,
+              });
+            }}
+          >
+            {stage}
+          </div>
+        ))}
+      </div>
+      <div className="flex flex-row p-[4px] border border-newTableBorder rounded-[8px] text-[14px] font-[500] gap-[2px]">
+        {Object.entries(MARKET_CONFIG).map(([key, cfg]) => (
+          <div
+            key={key}
+            className={clsx(
+              'pt-[6px] pb-[5px] cursor-pointer w-[42px] text-center rounded-[6px] transition-all',
+              calendar.market === key
+                ? `${cfg.bg} text-white`
+                : cfg.color
+            )}
+            onClick={() => {
+              calendar.setFilters({
+                startDate: calendar.startDate,
+                endDate: calendar.endDate,
+                display: calendar.display as 'day' | 'week' | 'month' | 'list',
+                customer: calendar.customer,
+                market: calendar.market === key ? null : key,
+              });
+            }}
+          >
+            {cfg.label}
+          </div>
+        ))}
+      </div>
       {!isListView && (
         <div className="flex flex-row p-[4px] border border-newTableBorder rounded-[8px] text-[14px] font-[500]">
           <div

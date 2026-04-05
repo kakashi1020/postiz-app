@@ -133,6 +133,10 @@ interface StoreState {
   setChars: (id: string, chars: number) => void;
   chars: Record<string, number>;
   setComments: (comments: boolean | 'no-media') => void;
+  funnelStage: 'TOFU' | 'MOFU' | 'BOFU' | null;
+  setFunnelStage: (funnelStage: 'TOFU' | 'MOFU' | 'BOFU' | null) => void;
+  market: string | null;
+  setMarket: (market: string | null) => void;
 }
 
 const initialState = {
@@ -155,6 +159,8 @@ const initialState = {
   global: [] as Values[],
   internal: [] as Internal[],
   chars: {},
+  funnelStage: null as 'TOFU' | 'MOFU' | 'BOFU' | null,
+  market: null as string | null,
 };
 
 export const useLaunchStore = create<StoreState>()((set) => ({
@@ -650,5 +656,13 @@ export const useLaunchStore = create<StoreState>()((set) => ({
             }
           : item
       ),
+    })),
+  setFunnelStage: (funnelStage: 'TOFU' | 'MOFU' | 'BOFU' | null) =>
+    set(() => ({
+      funnelStage,
+    })),
+  setMarket: (market: string | null) =>
+    set(() => ({
+      market,
     })),
 }));

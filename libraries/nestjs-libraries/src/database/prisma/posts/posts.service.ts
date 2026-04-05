@@ -744,13 +744,25 @@ export class PostsService {
         content: updateContent[i],
       }));
 
+      // Inherit market from integration if not explicitly set on post
+      let resolvedMarket = body.market;
+      if (!resolvedMarket) {
+        const integration = await this._integrationService.getIntegrationById(
+          orgId,
+          post.integration.id
+        );
+        resolvedMarket = integration?.market ?? undefined;
+      }
+
       const { posts } = await this._postRepository.createOrUpdatePost(
         body.type,
         orgId,
         body.type === 'now' ? dayjs().format('YYYY-MM-DDTHH:mm:00') : body.date,
         post,
         body.tags,
-        body.inter
+        body.inter,
+        body.funnelStage,
+        resolvedMarket
       );
 
       if (!posts?.length) {

@@ -163,6 +163,8 @@ export class PostsRepository {
               },
             }
           : {}),
+      ...(query.funnelStage ? { funnelStage: query.funnelStage } : {}),
+      ...(query.market ? { market: query.market } : {}),
       },
       select: {
         id: true,
@@ -173,6 +175,8 @@ export class PostsRepository {
         state: true,
         intervalInDays: true,
         group: true,
+        funnelStage: true,
+        market: true,
         tags: {
           select: {
             tag: true,
@@ -483,7 +487,9 @@ export class PostsRepository {
     date: string,
     body: PostBody,
     tags: { value: string; label: string }[],
-    inter?: number
+    inter?: number,
+    funnelStage?: string,
+    market?: string
   ) {
     const posts: Post[] = [];
     const uuid = uuidv4();
@@ -516,6 +522,8 @@ export class PostsRepository {
         delay: value.delay || 0,
         group: uuid,
         intervalInDays: inter ? +inter : null,
+        funnelStage: funnelStage || null,
+        market: market || null,
         approvedSubmitForOrder: APPROVED_SUBMIT_FOR_ORDER.NO,
         ...(state === 'update'
           ? {}

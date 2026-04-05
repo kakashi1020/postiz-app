@@ -334,6 +334,7 @@ model Integration {
   customerId            String?
   rootInternalId        String?
   additionalSettings    String?                @default("[]")
+  market                Market?
   exisingPlugData       ExisingPlugData[]
   customer              Customer?              @relation(fields: [customerId], references: [id])
   organization          Organization           @relation(fields: [organizationId], references: [id])
@@ -353,6 +354,7 @@ model Integration {
   @@index([inBetweenSteps])
   @@index([refreshNeeded])
   @@index([disabled])
+  @@index([market])
 }
 
 model Signatures {
@@ -412,6 +414,8 @@ model Post {
   lastMessageId              String?
   intervalInDays             Int?
   error                      String?
+  funnelStage                FunnelStage?
+  market                     Market?
   createdAt                  DateTime                  @default(now())
   updatedAt                  DateTime                  @updatedAt
   deletedAt                  DateTime?
@@ -441,6 +445,8 @@ model Post {
   @@index([updatedAt])
   @@index([releaseURL])
   @@index([integrationId])
+  @@index([funnelStage])
+  @@index([market])
 }
 
 model Notifications {
@@ -948,6 +954,19 @@ enum AnnouncementColor {
   INFO
   WARNING
   ERROR
+}
+
+enum FunnelStage {
+  TOFU
+  MOFU
+  BOFU
+}
+
+enum Market {
+  PH
+  KR
+  SG
+  MY
 }
 
 model Announcement {

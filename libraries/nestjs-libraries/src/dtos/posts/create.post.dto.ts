@@ -4,6 +4,7 @@ import {
   IsBoolean,
   IsDateString,
   IsDefined,
+  IsEnum,
   IsIn,
   IsNumber,
   IsOptional,
@@ -12,6 +13,7 @@ import {
   ValidateIf,
   ValidateNested,
 } from 'class-validator';
+import { FunnelStage, Market } from '@prisma/client';
 import { Type } from 'class-transformer';
 import { MediaDto } from '@gitroom/nestjs-libraries/dtos/media/media.dto';
 import {
@@ -113,6 +115,14 @@ export class CreatePostDto {
   @IsDefined()
   @ValidateNested({ each: true })
   tags: Tags[];
+
+  @IsOptional()
+  @IsEnum(FunnelStage)
+  funnelStage?: FunnelStage;
+
+  @IsOptional()
+  @IsEnum(Market)
+  market?: Market;
 
   @IsDefined()
   @Type(() => Post)

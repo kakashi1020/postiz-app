@@ -96,6 +96,10 @@ export const ManageModal: FC<AddEditModalProps> = (props) => {
       setSelectedIntegrations: state.setSelectedIntegrations,
       locked: state.locked,
       activateExitButton: state.activateExitButton,
+      funnelStage: state.funnelStage,
+      setFunnelStage: state.setFunnelStage,
+      market: state.market,
+      setMarket: state.setMarket,
     }))
   );
 
@@ -371,6 +375,8 @@ export const ManageModal: FC<AddEditModalProps> = (props) => {
         ...(repeater ? { inter: repeater } : {}),
         tags,
         shortLink,
+        ...(funnelStage ? { funnelStage } : {}),
+        ...(market ? { market } : {}),
         date: date.utc().format('YYYY-MM-DDTHH:mm:ss'),
         posts: checkAllValid.map((post: any) => ({
           integration: {
@@ -439,7 +445,7 @@ export const ManageModal: FC<AddEditModalProps> = (props) => {
         }
       }
     },
-    [ref, repeater, tags, date, addEditSets, dummy, shortlinkPreferenceData]
+    [ref, repeater, tags, date, addEditSets, dummy, shortlinkPreferenceData, funnelStage, market]
   );
 
   return (
@@ -564,6 +570,40 @@ export const ManageModal: FC<AddEditModalProps> = (props) => {
 
             {!dummy && (
               <RepeatComponent repeat={repeater} onChange={setRepeater} />
+            )}
+
+            {!dummy && (
+              <div className="flex items-center border border-newTableBorder rounded-[8px] overflow-hidden text-[13px] font-[500]">
+                {(['TOFU', 'MOFU', 'BOFU'] as const).map((stage) => (
+                  <div
+                    key={stage}
+                    onClick={() =>
+                      setFunnelStage(funnelStage === stage ? null : stage)
+                    }
+                    className={clsx(
+                      'px-[10px] py-[6px] cursor-pointer transition-all',
+                      funnelStage === stage
+                        ? 'bg-[#612BD3] text-white'
+                        : 'bg-newBgColorInner hover:bg-boxFocused'
+                    )}
+                  >
+                    {stage}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {!dummy && (
+              <select
+                value={market || ''}
+                onChange={(e) => setMarket(e.target.value || null)}
+                className="h-[34px] px-[8px] text-[13px] font-[500] bg-newBgColorInner border border-newTableBorder rounded-[8px] text-textColor cursor-pointer outline-none"
+              >
+                <option value="">{t('market', 'Market')}</option>
+                {(['PH', 'KR', 'SG', 'MY'] as const).map((m) => (
+                  <option key={m} value={m}>{m}</option>
+                ))}
+              </select>
             )}
           </div>
           <div className="pe-[20px] flex items-center justify-end gap-[8px]">

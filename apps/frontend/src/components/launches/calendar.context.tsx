@@ -30,6 +30,8 @@ export const CalendarContext = createContext({
   startDate: newDayjs().startOf('isoWeek').format('YYYY-MM-DD'),
   endDate: newDayjs().endOf('isoWeek').format('YYYY-MM-DD'),
   customer: null as string | null,
+  funnelStage: null as string | null,
+  market: null as string | null,
   loading: true,
   sets: [] as { name: string; id: string; content: string[] }[],
   signature: undefined as any,
@@ -58,6 +60,8 @@ export const CalendarContext = createContext({
     endDate: string;
     display: 'week' | 'month' | 'day' | 'list';
     customer: string | null;
+    funnelStage?: string | null;
+    market?: string | null;
   }) => {
     /** empty **/
   },
@@ -158,6 +162,8 @@ export const CalendarWeekProvider: FC<{
     startDate: initialRange.startDate,
     endDate: initialRange.endDate,
     customer: initCustomer || null,
+    funnelStage: null as string | null,
+    market: null as string | null,
     display,
   });
 
@@ -167,6 +173,8 @@ export const CalendarWeekProvider: FC<{
       startDate: filters.startDate,
       endDate: filters.endDate,
       customer: filters?.customer?.toString() || '',
+      funnelStage: filters?.funnelStage?.toString() || '',
+      market: filters?.market?.toString() || '',
     }).toString();
   }, [filters]);
 
@@ -175,6 +183,8 @@ export const CalendarWeekProvider: FC<{
     const modifiedParams = new URLSearchParams({
       display: filters.display,
       customer: filters?.customer?.toString() || '',
+      funnelStage: filters?.funnelStage?.toString() || '',
+      market: filters?.market?.toString() || '',
       startDate: newDayjs(filters.startDate).startOf('day').utc().format(),
       endDate: newDayjs(filters.endDate).endOf('day').utc().format(),
     }).toString();
@@ -260,9 +270,15 @@ export const CalendarWeekProvider: FC<{
       endDate: string;
       display: 'week' | 'month' | 'day' | 'list';
       customer: string | null;
+      funnelStage?: string | null;
+      market?: string | null;
     }) => {
       setDisplaySaved(newFilters.display);
-      setFilters(newFilters);
+      setFilters((prev) => ({
+        ...newFilters,
+        funnelStage: newFilters.funnelStage !== undefined ? newFilters.funnelStage : prev.funnelStage,
+        market: newFilters.market !== undefined ? newFilters.market : prev.market,
+      }));
       setInternalData([]);
 
       // Reset page when switching to list view
