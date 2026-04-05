@@ -35,6 +35,10 @@ import { ThirdPartyRepository } from '@gitroom/nestjs-libraries/database/prisma/
 import { ThirdPartyService } from '@gitroom/nestjs-libraries/database/prisma/third-party/third-party.service';
 import { VideoManager } from '@gitroom/nestjs-libraries/videos/video.manager';
 import { FalService } from '@gitroom/nestjs-libraries/openai/fal.service';
+import { ClaudeService } from '@gitroom/nestjs-libraries/openai/claude.service';
+import { NanoBananaService } from '@gitroom/nestjs-libraries/openai/nanobanana.service';
+import { FishAudioService } from '@gitroom/nestjs-libraries/openai/fishaudio.service';
+import { MarketContextService } from '@gitroom/nestjs-libraries/openai/market-context.service';
 import { RefreshIntegrationService } from '@gitroom/nestjs-libraries/integrations/refresh.integration.service';
 import { OAuthRepository } from '@gitroom/nestjs-libraries/database/prisma/oauth/oauth.repository';
 import { OAuthService } from '@gitroom/nestjs-libraries/database/prisma/oauth/oauth.service';
@@ -76,7 +80,11 @@ import { AnnouncementsService } from '@gitroom/nestjs-libraries/database/prisma/
     RefreshIntegrationService,
     ExtractContentService,
     OpenaiService,
+    ClaudeService,
     FalService,
+    NanoBananaService,
+    FishAudioService,
+    MarketContextService,
     EmailService,
     TrackService,
     ShortLinkService,
