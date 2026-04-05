@@ -43,10 +43,27 @@ model Organization {
   webhooks            Webhooks[]
   oauthApp            OAuthApp[]
   oauthAuthorizations OAuthAuthorization[]
+  projects            Project[]
 
   @@index([apiKey])
   @@index([streakSince])
   @@index([paymentId])
+}
+
+model Project {
+  id             String       @id @default(uuid())
+  name           String
+  description    String?
+  slug           String       @unique
+  organizationId String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  deletedAt      DateTime?
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  posts          Post[]
+
+  @@index([organizationId])
+  @@index([deletedAt])
 }
 
 model Tags {
@@ -416,6 +433,7 @@ model Post {
   error                      String?
   funnelStage                FunnelStage?
   market                     Market?
+  projectId                  String?
   createdAt                  DateTime                  @default(now())
   updatedAt                  DateTime                  @updatedAt
   deletedAt                  DateTime?
@@ -429,6 +447,7 @@ model Post {
   childrenPost               Post[]                    @relation("parentPostId")
   submittedForOrder          Orders?                   @relation(fields: [submittedForOrderId], references: [id])
   submittedForOrganization   Organization?             @relation("submittedForOrg", fields: [submittedForOrganizationId], references: [id])
+  project                    Project?                  @relation(fields: [projectId], references: [id])
   tags                       TagsPosts[]
 
   @@index([group])
@@ -447,6 +466,7 @@ model Post {
   @@index([integrationId])
   @@index([funnelStage])
   @@index([market])
+  @@index([projectId])
 }
 
 model Notifications {
