@@ -53,6 +53,8 @@ import { UsageRepository } from '@gitroom/nestjs-libraries/usage/usage.repositor
 import { UsageService } from '@gitroom/nestjs-libraries/usage/usage.service';
 import { AnalyticsRepository } from '@gitroom/nestjs-libraries/analytics/analytics.repository';
 import { AnalyticsService } from '@gitroom/nestjs-libraries/analytics/analytics.service';
+import { FrameworkRepository } from '@gitroom/nestjs-libraries/framework/framework.repository';
+import { FrameworkService } from '@gitroom/nestjs-libraries/framework/framework.service';
 
 @Global()
 @Module({
@@ -115,6 +117,8 @@ import { AnalyticsService } from '@gitroom/nestjs-libraries/analytics/analytics.
     UsageService,
     AnalyticsRepository,
     AnalyticsService,
+    FrameworkRepository,
+    FrameworkService,
   ],
   get exports() {
     return this.providers;

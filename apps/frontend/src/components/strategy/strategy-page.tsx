@@ -8,6 +8,7 @@ import { useProjectStore } from '@gitroom/frontend/components/projects/project.s
 import { useToaster } from '@gitroom/react/toaster/toaster';
 import { LoadingComponent } from '@gitroom/frontend/components/layout/loading';
 import { StrategyDetail } from '@gitroom/frontend/components/strategy/strategy-detail';
+import { StrategyMatrix } from '@gitroom/frontend/components/strategy/strategy-matrix';
 
 const MARKETS = ['PH', 'KR', 'SG', 'MY'] as const;
 const PLATFORMS = ['LinkedIn', 'X', 'Facebook', 'Instagram', 'TikTok'] as const;
@@ -116,6 +117,7 @@ export const StrategyPage: FC = () => {
   const { data: tiles, isLoading, mutate } = useStrategies(selectedProjectId);
   const [selectedStrategyId, setSelectedStrategyId] = useState<string | null>(null);
   const [filterMarket, setFilterMarket] = useState<string | ''>('');
+  const [showBulk, setShowBulk] = useState(false);
 
   if (!selectedProjectId) {
     return (
@@ -150,6 +152,12 @@ export const StrategyPage: FC = () => {
     <div className="bg-newBgColorInner flex-1 p-[20px] flex flex-col gap-[16px]">
       <div className="flex items-center gap-[12px]">
         <h2 className="text-[20px] font-[600] flex-1">Content Strategy</h2>
+        <button
+          onClick={() => setShowBulk(!showBulk)}
+          className="h-[36px] px-[14px] text-[13px] font-[600] rounded-[8px] border border-newTableBorder hover:bg-boxHover"
+        >
+          {showBulk ? 'Close Wizard' : 'Bulk Generate'}
+        </button>
         <div className="flex gap-[4px] border border-newTableBorder rounded-[8px] p-[4px] text-[13px] font-[500]">
           <div
             onClick={() => setFilterMarket('')}
@@ -174,6 +182,10 @@ export const StrategyPage: FC = () => {
           ))}
         </div>
       </div>
+
+      {showBulk && (
+        <StrategyMatrix onComplete={() => { setShowBulk(false); mutate(); }} />
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-[12px]">
         {filteredTiles.map((tile) => (
