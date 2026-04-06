@@ -23,6 +23,7 @@ import useCookie from 'react-use-cookie';
 import { newDayjs } from '@gitroom/frontend/components/layout/set.timezone';
 import { timer } from '@gitroom/helpers/utils/timer';
 import { expandPostsList, expandPosts } from '@gitroom/helpers/utils/posts.list.minify';
+import { useProjectStore } from '@gitroom/frontend/components/projects/project.store';
 extend(isoWeek);
 extend(weekOfYear);
 
@@ -32,6 +33,7 @@ export const CalendarContext = createContext({
   customer: null as string | null,
   funnelStage: null as string | null,
   market: null as string | null,
+  projectId: null as string | null,
   loading: true,
   sets: [] as { name: string; id: string; content: string[] }[],
   signature: undefined as any,
@@ -62,6 +64,7 @@ export const CalendarContext = createContext({
     customer: string | null;
     funnelStage?: string | null;
     market?: string | null;
+    projectId?: string | null;
   }) => {
     /** empty **/
   },
@@ -139,6 +142,7 @@ export const CalendarWeekProvider: FC<{
   integrations: Integrations[];
 }> = ({ children, integrations }) => {
   const fetch = useFetch();
+  const selectedProjectId = useProjectStore((state) => state.selectedProjectId);
   const [internalData, setInternalData] = useState([] as any[]);
   const [trendings] = useState<string[]>([]);
   const searchParams = useSearchParams();
@@ -164,8 +168,17 @@ export const CalendarWeekProvider: FC<{
     customer: initCustomer || null,
     funnelStage: null as string | null,
     market: null as string | null,
+    projectId: null as string | null,
     display,
   });
+
+  // Sync projectId from store into filters
+  useEffect(() => {
+    setFilters((prev) => {
+      if (prev.projectId === selectedProjectId) return prev;
+      return { ...prev, projectId: selectedProjectId };
+    });
+  }, [selectedProjectId]);
 
   const params = useMemo(() => {
     return new URLSearchParams({
@@ -175,6 +188,7 @@ export const CalendarWeekProvider: FC<{
       customer: filters?.customer?.toString() || '',
       funnelStage: filters?.funnelStage?.toString() || '',
       market: filters?.market?.toString() || '',
+      projectId: filters?.projectId?.toString() || '',
     }).toString();
   }, [filters]);
 
@@ -185,6 +199,7 @@ export const CalendarWeekProvider: FC<{
       customer: filters?.customer?.toString() || '',
       funnelStage: filters?.funnelStage?.toString() || '',
       market: filters?.market?.toString() || '',
+      projectId: filters?.projectId?.toString() || '',
       startDate: newDayjs(filters.startDate).startOf('day').utc().format(),
       endDate: newDayjs(filters.endDate).endOf('day').utc().format(),
     }).toString();
@@ -199,8 +214,9 @@ export const CalendarWeekProvider: FC<{
       page: listPage.toString(),
       limit: '100',
       customer: filters?.customer?.toString() || '',
+      projectId: filters?.projectId?.toString() || '',
     }).toString();
-  }, [listPage, filters.customer]);
+  }, [listPage, filters.customer, filters.projectId]);
 
   const loadListData = useCallback(async () => {
     const response = await fetch(`/posts/list?${listParams}`);
@@ -272,12 +288,14 @@ export const CalendarWeekProvider: FC<{
       customer: string | null;
       funnelStage?: string | null;
       market?: string | null;
+      projectId?: string | null;
     }) => {
       setDisplaySaved(newFilters.display);
       setFilters((prev) => ({
         ...newFilters,
         funnelStage: newFilters.funnelStage !== undefined ? newFilters.funnelStage : prev.funnelStage,
         market: newFilters.market !== undefined ? newFilters.market : prev.market,
+        projectId: newFilters.projectId !== undefined ? newFilters.projectId : prev.projectId,
       }));
       setInternalData([]);
 

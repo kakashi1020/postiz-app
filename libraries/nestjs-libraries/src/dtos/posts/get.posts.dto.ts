@@ -24,4 +24,8 @@ export class GetPostsDto {
   @IsOptional()
   @IsEnum(Market)
   market?: Market;
+
+  @IsOptional()
+  @IsString()
+  projectId?: string;
 }

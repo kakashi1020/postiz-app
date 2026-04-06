@@ -42,6 +42,7 @@ import {
 } from '@gitroom/frontend/components/ui/icons';
 import { useHasScroll } from '@gitroom/frontend/components/ui/is.scroll.hook';
 import { useShortlinkPreference } from '@gitroom/frontend/components/settings/shortlink-preference.component';
+import { useProjectStore } from '@gitroom/frontend/components/projects/project.store';
 import dayjs from 'dayjs';
 import { Button } from '@gitroom/react/form/button';
 
@@ -62,6 +63,7 @@ export const ManageModal: FC<AddEditModalProps> = (props) => {
   const modal = useModals();
   const [showSettings, setShowSettings] = useState(false);
   const { data: shortlinkPreferenceData } = useShortlinkPreference();
+  const selectedProjectId = useProjectStore((state) => state.selectedProjectId);
 
   const { addEditSets, mutate, customClose, dummy } = props;
 
@@ -377,6 +379,7 @@ export const ManageModal: FC<AddEditModalProps> = (props) => {
         shortLink,
         ...(funnelStage ? { funnelStage } : {}),
         ...(market ? { market } : {}),
+        ...(selectedProjectId ? { projectId: selectedProjectId } : {}),
         date: date.utc().format('YYYY-MM-DDTHH:mm:ss'),
         posts: checkAllValid.map((post: any) => ({
           integration: {
@@ -445,7 +448,7 @@ export const ManageModal: FC<AddEditModalProps> = (props) => {
         }
       }
     },
-    [ref, repeater, tags, date, addEditSets, dummy, shortlinkPreferenceData, funnelStage, market]
+    [ref, repeater, tags, date, addEditSets, dummy, shortlinkPreferenceData, funnelStage, market, selectedProjectId]
   );
 
   return (

@@ -762,7 +762,8 @@ export class PostsService {
         body.tags,
         body.inter,
         body.funnelStage,
-        resolvedMarket
+        resolvedMarket,
+        body.projectId
       );
 
       if (!posts?.length) {

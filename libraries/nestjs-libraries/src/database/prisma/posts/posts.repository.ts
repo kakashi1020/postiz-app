@@ -165,6 +165,7 @@ export class PostsRepository {
           : {}),
       ...(query.funnelStage ? { funnelStage: query.funnelStage } : {}),
       ...(query.market ? { market: query.market } : {}),
+      ...(query.projectId ? { projectId: query.projectId } : {}),
       },
       select: {
         id: true,
@@ -246,6 +247,7 @@ export class PostsRepository {
             },
           }
         : {}),
+      ...(query.projectId ? { projectId: query.projectId } : {}),
     };
 
     const [posts, total] = await Promise.all([
@@ -489,7 +491,8 @@ export class PostsRepository {
     tags: { value: string; label: string }[],
     inter?: number,
     funnelStage?: string,
-    market?: string
+    market?: string,
+    projectId?: string
   ) {
     const posts: Post[] = [];
     const uuid = uuidv4();
@@ -524,6 +527,7 @@ export class PostsRepository {
         intervalInDays: inter ? +inter : null,
         funnelStage: funnelStage || null,
         market: market || null,
+        ...(projectId ? { project: { connect: { id: projectId } } } : {}),
         approvedSubmitForOrder: APPROVED_SUBMIT_FOR_ORDER.NO,
         ...(state === 'update'
           ? {}

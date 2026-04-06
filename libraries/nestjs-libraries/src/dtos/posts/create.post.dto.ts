@@ -124,6 +124,10 @@ export class CreatePostDto {
   @IsEnum(Market)
   market?: Market;
 
+  @IsOptional()
+  @IsString()
+  projectId?: string;
+
   @IsDefined()
   @Type(() => Post)
   @IsArray()
