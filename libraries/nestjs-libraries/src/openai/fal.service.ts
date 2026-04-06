@@ -1,10 +1,8 @@
 import { Injectable } from '@nestjs/common';
+import { AppConfigService } from '@gitroom/nestjs-libraries/config/app-config.service';
 
 import pLimit from 'p-limit';
 const limit = pLimit(10);
-
-const VIDEO_MODEL =
-  process.env.VIDEO_MODEL || 'fal-ai/kling-video/v1.6/pro/image-to-video';
 
 function timer(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -12,17 +10,41 @@ function timer(ms: number) {
 
 @Injectable()
 export class FalService {
+  constructor(private _appConfigService: AppConfigService) {}
+
+  private async getApiKey(organizationId?: string): Promise<string> {
+    if (organizationId) {
+      const override = await this._appConfigService.get(organizationId, 'FAL_KEY');
+      if (override) {
+        return override;
+      }
+    }
+    return process.env.FAL_KEY || '';
+  }
+
+  private async getVideoModel(organizationId?: string): Promise<string> {
+    if (organizationId) {
+      const override = await this._appConfigService.get(organizationId, 'VIDEO_MODEL');
+      if (override) {
+        return override;
+      }
+    }
+    return process.env.VIDEO_MODEL || 'fal-ai/kling-video/v1.6/pro/image-to-video';
+  }
+
   async generateImageFromText(
     model: string,
     text: string,
-    isVertical: boolean = false
+    isVertical: boolean = false,
+    organizationId?: string
   ): Promise<string> {
+    const apiKey = await this.getApiKey(organizationId);
     const { images, video, ...all } = await (
       await limit(() =>
         fetch(`https://fal.run/fal-ai/${model}`, {
           method: 'POST',
           headers: {
-            Authorization: `Key ${process.env.FAL_KEY}`,
+            Authorization: `Key ${apiKey}`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
@@ -48,16 +70,19 @@ export class FalService {
 
   async generateVideo(
     prompt: string,
-    isVertical: boolean = false
+    isVertical: boolean = false,
+    organizationId?: string
   ): Promise<string> {
-    const model = VIDEO_MODEL.replace(/^fal-ai\//, '');
+    const apiKey = await this.getApiKey(organizationId);
+    const videoModel = await this.getVideoModel(organizationId);
+    const model = videoModel.replace(/^fal-ai\//, '');
 
     const data = await (
       await limit(() =>
         fetch(`https://queue.fal.run/fal-ai/${model}`, {
           method: 'POST',
           headers: {
-            Authorization: `Key ${process.env.FAL_KEY}`,
+            Authorization: `Key ${apiKey}`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
@@ -86,7 +111,7 @@ export class FalService {
           `https://queue.fal.run/fal-ai/${model}/requests/${requestId}/status`,
           {
             headers: {
-              Authorization: `Key ${process.env.FAL_KEY}`,
+              Authorization: `Key ${apiKey}`,
               'Content-Type': 'application/json',
             },
           }
@@ -99,7 +124,7 @@ export class FalService {
             `https://queue.fal.run/fal-ai/${model}/requests/${requestId}`,
             {
               headers: {
-                Authorization: `Key ${process.env.FAL_KEY}`,
+                Authorization: `Key ${apiKey}`,
                 'Content-Type': 'application/json',
               },
             }

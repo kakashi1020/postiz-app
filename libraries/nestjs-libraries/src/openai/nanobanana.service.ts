@@ -1,13 +1,25 @@
 import { Injectable } from '@nestjs/common';
+import { AppConfigService } from '@gitroom/nestjs-libraries/config/app-config.service';
 
 @Injectable()
 export class NanoBananaService {
+  constructor(private _appConfigService: AppConfigService) {}
+
   async generateImage(
     prompt: string,
-    aspectRatio: string = '16:9'
+    aspectRatio: string = '16:9',
+    organizationId?: string
   ): Promise<Buffer> {
+    let apiKey = process.env.GEMINI_API_KEY || '';
+    if (organizationId) {
+      const override = await this._appConfigService.get(organizationId, 'GEMINI_API_KEY');
+      if (override) {
+        apiKey = override;
+      }
+    }
+
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${process.env.GEMINI_API_KEY}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`,
       {
         method: 'POST',
         headers: {

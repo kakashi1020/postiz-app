@@ -1,13 +1,24 @@
 import { Injectable } from '@nestjs/common';
 import Anthropic from '@anthropic-ai/sdk';
-
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY || '',
-});
+import { AppConfigService } from '@gitroom/nestjs-libraries/config/app-config.service';
 
 @Injectable()
 export class ClaudeService {
-  async generateContent(prompt: string, system?: string, maxTokens = 4096): Promise<string> {
+  constructor(private _appConfigService: AppConfigService) {}
+
+  private async getClient(organizationId?: string): Promise<Anthropic> {
+    let apiKey = process.env.ANTHROPIC_API_KEY || '';
+    if (organizationId) {
+      const override = await this._appConfigService.get(organizationId, 'ANTHROPIC_API_KEY');
+      if (override) {
+        apiKey = override;
+      }
+    }
+    return new Anthropic({ apiKey });
+  }
+
+  async generateContent(prompt: string, system?: string, maxTokens = 4096, organizationId?: string): Promise<string> {
+    const anthropic = await this.getClient(organizationId);
     const response = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: maxTokens,
@@ -24,7 +35,8 @@ export class ClaudeService {
     return block.type === 'text' ? block.text : '';
   }
 
-  async separatePosts(content: string, len: number) {
+  async separatePosts(content: string, len: number, organizationId?: string) {
+    const anthropic = await this.getClient(organizationId);
     const splitResponse = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 4096,

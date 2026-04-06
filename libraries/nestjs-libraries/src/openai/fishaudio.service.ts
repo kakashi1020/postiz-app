@@ -1,15 +1,29 @@
 import { Injectable } from '@nestjs/common';
+import { AppConfigService } from '@gitroom/nestjs-libraries/config/app-config.service';
 
 @Injectable()
 export class FishAudioService {
-  async textToSpeech(text: string, voiceId: string): Promise<Buffer> {
+  constructor(private _appConfigService: AppConfigService) {}
+
+  private async getApiKey(organizationId?: string): Promise<string> {
+    if (organizationId) {
+      const override = await this._appConfigService.get(organizationId, 'FISH_AUDIO_KEY');
+      if (override) {
+        return override;
+      }
+    }
+    return process.env.FISH_AUDIO_KEY || '';
+  }
+
+  async textToSpeech(text: string, voiceId: string, organizationId?: string): Promise<Buffer> {
+    const apiKey = await this.getApiKey(organizationId);
     const response = await fetch(
       `https://api.fish.audio/v1/tts`,
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${process.env.FISH_AUDIO_KEY}`,
+          Authorization: `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
           text,
@@ -27,14 +41,15 @@ export class FishAudioService {
     return Buffer.from(await response.arrayBuffer());
   }
 
-  async listVoices(): Promise<Array<{ id: string; name: string }>> {
+  async listVoices(organizationId?: string): Promise<Array<{ id: string; name: string }>> {
+    const apiKey = await this.getApiKey(organizationId);
     const response = await fetch(
       'https://api.fish.audio/v1/models',
       {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${process.env.FISH_AUDIO_KEY}`,
+          Authorization: `Bearer ${apiKey}`,
         },
       }
     );

@@ -55,6 +55,8 @@ import { AnalyticsRepository } from '@gitroom/nestjs-libraries/analytics/analyti
 import { AnalyticsService } from '@gitroom/nestjs-libraries/analytics/analytics.service';
 import { FrameworkRepository } from '@gitroom/nestjs-libraries/framework/framework.repository';
 import { FrameworkService } from '@gitroom/nestjs-libraries/framework/framework.service';
+import { AppConfigRepository } from '@gitroom/nestjs-libraries/config/app-config.repository';
+import { AppConfigService } from '@gitroom/nestjs-libraries/config/app-config.service';
 
 @Global()
 @Module({
@@ -119,6 +121,8 @@ import { FrameworkService } from '@gitroom/nestjs-libraries/framework/framework.
     AnalyticsService,
     FrameworkRepository,
     FrameworkService,
+    AppConfigRepository,
+    AppConfigService,
   ],
   get exports() {
     return this.providers;
