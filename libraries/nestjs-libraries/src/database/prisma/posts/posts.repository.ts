@@ -1,7 +1,7 @@
 import { PrismaRepository } from '@gitroom/nestjs-libraries/database/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
 import { Post as PostBody } from '@gitroom/nestjs-libraries/dtos/posts/create.post.dto';
-import { APPROVED_SUBMIT_FOR_ORDER, Post, State } from '@prisma/client';
+import { APPROVED_SUBMIT_FOR_ORDER, FunnelStage, Market, Post, State } from '@prisma/client';
 import { GetPostsDto } from '@gitroom/nestjs-libraries/dtos/posts/get.posts.dto';
 import { GetPostsListDto } from '@gitroom/nestjs-libraries/dtos/posts/get.posts.list.dto';
 import dayjs from 'dayjs';
@@ -490,8 +490,8 @@ export class PostsRepository {
     body: PostBody,
     tags: { value: string; label: string }[],
     inter?: number,
-    funnelStage?: string,
-    market?: string,
+    funnelStage?: FunnelStage,
+    market?: Market,
     projectId?: string
   ) {
     const posts: Post[] = [];

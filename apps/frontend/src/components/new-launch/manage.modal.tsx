@@ -82,6 +82,10 @@ export const ManageModal: FC<AddEditModalProps> = (props) => {
     current,
     activateExitButton,
     setHide,
+    funnelStage,
+    setFunnelStage,
+    market,
+    setMarket,
   } = useLaunchStore(
     useShallow((state) => ({
       hide: state.hide,
