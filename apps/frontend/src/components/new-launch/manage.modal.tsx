@@ -44,6 +44,7 @@ import { useHasScroll } from '@gitroom/frontend/components/ui/is.scroll.hook';
 import { useShortlinkPreference } from '@gitroom/frontend/components/settings/shortlink-preference.component';
 import { useProjectStore } from '@gitroom/frontend/components/projects/project.store';
 import { useVariables } from '@gitroom/react/helpers/variable.context';
+import { StrategySidebar } from '@gitroom/frontend/components/strategy/strategy-sidebar';
 import dayjs from 'dayjs';
 import { Button } from '@gitroom/react/form/button';
 
@@ -547,6 +548,17 @@ export const ManageModal: FC<AddEditModalProps> = (props) => {
               </div>
             </div>
           </div>
+          {!dummy && market && selectedProjectId && (
+            <StrategySidebar
+              projectId={selectedProjectId}
+              market={market}
+              platform={selectedIntegrations[0]?.integration?.identifier?.split('-')[0] || null}
+              onInsertHook={(text) => {
+                navigator.clipboard.writeText(text);
+                toaster.show('Hook copied to clipboard');
+              }}
+            />
+          )}
           <div className="w-[580px] flex flex-col">
             <div className="bg-newBgColor h-[65px] rounded-e-[20px] !rounded-b-[0] flex items-center px-[20px] text-[20px] font-[600]">
               <div className="flex-1">{t('post_preview', 'Post Preview')}</div>
