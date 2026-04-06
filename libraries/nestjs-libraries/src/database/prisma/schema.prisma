@@ -59,8 +59,9 @@ model Project {
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
   deletedAt      DateTime?
-  organization   Organization @relation(fields: [organizationId], references: [id])
-  posts          Post[]
+  organization       Organization      @relation(fields: [organizationId], references: [id])
+  posts              Post[]
+  contentStrategies  ContentStrategy[]
 
   @@index([organizationId])
   @@index([deletedAt])
@@ -1007,4 +1008,81 @@ model Announcement {
   description String
   color       AnnouncementColor @default(INFO)
   createdAt   DateTime          @default(now())
+}
+
+model ContentStrategy {
+  id                String              @id @default(uuid())
+  projectId         String
+  market            Market
+  platform          String
+  funnelStage       FunnelStage
+  pillarBreakdown   Json?
+  isActive          Boolean             @default(true)
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  project           Project             @relation(fields: [projectId], references: [id])
+  hooks             Hook[]
+  scripts           Script[]
+  seriesConcepts    SeriesConcept[]
+  monthlyPlans      MonthlyContentPlan[]
+
+  @@index([projectId])
+  @@index([market])
+  @@index([platform])
+  @@index([funnelStage])
+}
+
+model Hook {
+  id          String          @id @default(uuid())
+  strategyId  String
+  text        String
+  hookType    String
+  pillar      String
+  isStarred   Boolean         @default(false)
+  usageCount  Int             @default(0)
+  createdAt   DateTime        @default(now())
+  strategy    ContentStrategy @relation(fields: [strategyId], references: [id], onDelete: Cascade)
+
+  @@index([strategyId])
+}
+
+model Script {
+  id              String          @id @default(uuid())
+  strategyId      String
+  title           String
+  scriptStructure String
+  pillar          String
+  content         String
+  usageCount      Int             @default(0)
+  createdAt       DateTime        @default(now())
+  strategy        ContentStrategy @relation(fields: [strategyId], references: [id], onDelete: Cascade)
+
+  @@index([strategyId])
+}
+
+model SeriesConcept {
+  id          String          @id @default(uuid())
+  strategyId  String
+  name        String
+  seriesType  String
+  episodePlan Json?
+  isActive    Boolean         @default(true)
+  createdAt   DateTime        @default(now())
+  strategy    ContentStrategy @relation(fields: [strategyId], references: [id], onDelete: Cascade)
+
+  @@index([strategyId])
+}
+
+model MonthlyContentPlan {
+  id          String          @id @default(uuid())
+  strategyId  String
+  month       Int
+  year        Int
+  weekPlans   Json?
+  contentMix  Json?
+  createdAt   DateTime        @default(now())
+  strategy    ContentStrategy @relation(fields: [strategyId], references: [id], onDelete: Cascade)
+
+  @@index([strategyId])
+  @@index([month, year])
 }

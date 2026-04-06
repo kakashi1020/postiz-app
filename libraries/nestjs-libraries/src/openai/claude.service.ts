@@ -7,10 +7,10 @@ const anthropic = new Anthropic({
 
 @Injectable()
 export class ClaudeService {
-  async generateContent(prompt: string, system?: string): Promise<string> {
+  async generateContent(prompt: string, system?: string, maxTokens = 4096): Promise<string> {
     const response = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
-      max_tokens: 1024,
+      max_tokens: maxTokens,
       ...(system ? { system } : {}),
       messages: [
         {
