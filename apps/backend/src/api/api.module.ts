@@ -43,6 +43,7 @@ import { StrategyController } from '@gitroom/backend/api/routes/strategy.control
 import { UsageController } from '@gitroom/backend/api/routes/usage.controller';
 import { AnalyticsHistoryController } from '@gitroom/backend/api/routes/analytics-history.controller';
 import { FrameworkController } from '@gitroom/backend/api/routes/framework.controller';
+import { HealthController } from '@gitroom/backend/api/routes/health.controller';
 import { AuthProviderManager } from '@gitroom/backend/services/auth/providers/providers.manager';
 import { GithubProvider } from '@gitroom/backend/services/auth/providers/github.provider';
 import { GoogleProvider } from '@gitroom/backend/services/auth/providers/google.provider';
@@ -84,6 +85,7 @@ const authenticatedController = [
     AuthController,
     PublicController,
     MonitorController,
+    HealthController,
     EnterpriseController,
     NoAuthIntegrationsController,
     OAuthController,
