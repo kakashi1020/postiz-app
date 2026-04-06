@@ -7,7 +7,7 @@ import { PostsRepository } from '@gitroom/nestjs-libraries/database/prisma/posts
 import { CreatePostDto } from '@gitroom/nestjs-libraries/dtos/posts/create.post.dto';
 import dayjs from 'dayjs';
 import { IntegrationManager } from '@gitroom/nestjs-libraries/integrations/integration.manager';
-import { Integration, Post, Media, From, State } from '@prisma/client';
+import { ApprovalStatus, Integration, Post, Media, From, State } from '@prisma/client';
 import { GetPostsDto } from '@gitroom/nestjs-libraries/dtos/posts/get.posts.dto';
 import { GetPostsListDto } from '@gitroom/nestjs-libraries/dtos/posts/get.posts.list.dto';
 import { shuffle } from 'lodash';
@@ -770,7 +770,21 @@ export class PostsService {
         return [] as any[];
       }
 
-      if (body.type !== 'update') {
+      const requiresApproval =
+        !!process.env.IS_GENERAL &&
+        body.type !== 'draft' &&
+        body.type !== 'update';
+
+      if (requiresApproval) {
+        // Set approval status to PENDING; do NOT start the Temporal workflow.
+        // The workflow will be started when the post is approved via ApprovalService.
+        await this._postRepository.updateApprovalStatus(posts[0].id, {
+          approvalStatus: ApprovalStatus.PENDING,
+          approvedBy: null,
+          approvedAt: null,
+          rejectionReason: null,
+        });
+      } else if (body.type !== 'update') {
         this.startWorkflow(
           post.settings.__type.split('-')[0].toLowerCase(),
           posts[0].id,

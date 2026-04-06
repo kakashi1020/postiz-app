@@ -43,6 +43,7 @@ import {
 import { useHasScroll } from '@gitroom/frontend/components/ui/is.scroll.hook';
 import { useShortlinkPreference } from '@gitroom/frontend/components/settings/shortlink-preference.component';
 import { useProjectStore } from '@gitroom/frontend/components/projects/project.store';
+import { useVariables } from '@gitroom/react/helpers/variable.context';
 import dayjs from 'dayjs';
 import { Button } from '@gitroom/react/form/button';
 
@@ -64,6 +65,7 @@ export const ManageModal: FC<AddEditModalProps> = (props) => {
   const [showSettings, setShowSettings] = useState(false);
   const { data: shortlinkPreferenceData } = useShortlinkPreference();
   const selectedProjectId = useProjectStore((state) => state.selectedProjectId);
+  const { isGeneral } = useVariables();
 
   const { addEditSets, mutate, customClose, dummy } = props;
 
@@ -680,7 +682,9 @@ export const ManageModal: FC<AddEditModalProps> = (props) => {
                       : dummy
                       ? t('create_output', 'Create output')
                       : !existingData?.integration
-                      ? t('add_to_calendar', 'Add to calendar')
+                      ? isGeneral
+                        ? t('submit_for_approval', 'Submit for Approval')
+                        : t('add_to_calendar', 'Add to calendar')
                       : existingData?.posts?.[0]?.state === 'DRAFT'
                       ? t('schedule', 'Schedule')
                       : t('update', 'Update')}

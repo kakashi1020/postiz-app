@@ -1143,8 +1143,20 @@ const CalendarItem: FC<{
           />
         </div>
         <div className="w-full flex-1 flex flex-col min-h-[40px]">
-          <div className="text-start">
+          <div className="text-start flex items-center gap-[4px]">
             {state === 'DRAFT' ? t('draft', 'Draft') + ': ' : ''}
+            {(post as any).approvalStatus === 'PENDING' && (
+              <span className="text-[9px] font-[700] bg-yellow-500 text-white px-[4px] py-[1px] rounded-[3px]">PENDING</span>
+            )}
+            {(post as any).approvalStatus === 'APPROVED' && (
+              <span className="text-[9px] font-[700] bg-green-500 text-white px-[4px] py-[1px] rounded-[3px]">APPROVED</span>
+            )}
+            {(post as any).approvalStatus === 'REJECTED' && (
+              <span className="text-[9px] font-[700] bg-red-500 text-white px-[4px] py-[1px] rounded-[3px]">REJECTED</span>
+            )}
+            {(post as any).approvalStatus === 'CHANGES_REQUESTED' && (
+              <span className="text-[9px] font-[700] bg-orange-500 text-white px-[4px] py-[1px] rounded-[3px]">CHANGES</span>
+            )}
           </div>
             <div className="w-full relative">
               <div className="absolute top-0 start-0 w-full text-ellipsis break-words line-clamp-1 text-start">

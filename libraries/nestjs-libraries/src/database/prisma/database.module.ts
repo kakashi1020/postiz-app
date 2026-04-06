@@ -46,6 +46,7 @@ import { AnnouncementsRepository } from '@gitroom/nestjs-libraries/database/pris
 import { AnnouncementsService } from '@gitroom/nestjs-libraries/database/prisma/announcements/announcements.service';
 import { ProjectsRepository } from '@gitroom/nestjs-libraries/database/prisma/projects/projects.repository';
 import { ProjectsService } from '@gitroom/nestjs-libraries/database/prisma/projects/projects.service';
+import { ApprovalService } from '@gitroom/nestjs-libraries/database/prisma/posts/approval.service';
 
 @Global()
 @Module({
@@ -101,6 +102,7 @@ import { ProjectsService } from '@gitroom/nestjs-libraries/database/prisma/proje
     AnnouncementsService,
     ProjectsRepository,
     ProjectsService,
+    ApprovalService,
   ],
   get exports() {
     return this.providers;

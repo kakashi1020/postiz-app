@@ -4,11 +4,12 @@ import { usePathname } from 'next/navigation';
 import clsx from 'clsx';
 import Link from 'next/link';
 
-export const MenuItem: FC<{ label: string; icon: ReactNode; path: string; onClick?: () => void }> = ({
+export const MenuItem: FC<{ label: string; icon: ReactNode; path: string; onClick?: () => void; badge?: number }> = ({
   label,
   icon,
   path,
   onClick,
+  badge,
 }) => {
   const currentPath = usePathname();
   const isActive = currentPath.indexOf(path) === 0;
@@ -18,11 +19,18 @@ export const MenuItem: FC<{ label: string; icon: ReactNode; path: string; onClic
     isActive ? 'text-textItemFocused bg-boxFocused' : 'text-textItemBlur'
   );
 
+  const badgeEl = badge && badge > 0 ? (
+    <div className="absolute top-[2px] end-[2px] min-w-[16px] h-[16px] rounded-full bg-red-500 text-white text-[9px] font-[700] flex items-center justify-center px-[3px]">
+      {badge > 99 ? '99+' : badge}
+    </div>
+  ) : null;
+
   if (onClick) {
     return (
-      <button onClick={onClick} className={className}>
+      <button onClick={onClick} className={clsx(className, 'relative')}>
         <div className="custom:hidden">{icon}</div>
         <div className="text-[10px]">{label}</div>
+        {badgeEl}
       </button>
     );
   }
@@ -32,10 +40,11 @@ export const MenuItem: FC<{ label: string; icon: ReactNode; path: string; onClic
       prefetch={true}
       href={path}
       {...path.indexOf('http') === 0 && { target: '_blank' }}
-      className={className}
+      className={clsx(className, 'relative')}
     >
       <div className="custom:hidden">{icon}</div>
       <div className="text-[10px]">{label}</div>
+      {badgeEl}
     </Link>
   );
 };

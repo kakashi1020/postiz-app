@@ -1,7 +1,7 @@
 import { PrismaRepository } from '@gitroom/nestjs-libraries/database/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
 import { Post as PostBody } from '@gitroom/nestjs-libraries/dtos/posts/create.post.dto';
-import { APPROVED_SUBMIT_FOR_ORDER, FunnelStage, Market, Post, State } from '@prisma/client';
+import { APPROVED_SUBMIT_FOR_ORDER, ApprovalStatus, FunnelStage, Market, Post, State } from '@prisma/client';
 import { GetPostsDto } from '@gitroom/nestjs-libraries/dtos/posts/get.posts.dto';
 import { GetPostsListDto } from '@gitroom/nestjs-libraries/dtos/posts/get.posts.list.dto';
 import dayjs from 'dayjs';
@@ -166,6 +166,7 @@ export class PostsRepository {
       ...(query.funnelStage ? { funnelStage: query.funnelStage } : {}),
       ...(query.market ? { market: query.market } : {}),
       ...(query.projectId ? { projectId: query.projectId } : {}),
+      ...(query.approvalStatus ? { approvalStatus: query.approvalStatus } : {}),
       },
       select: {
         id: true,
@@ -178,6 +179,8 @@ export class PostsRepository {
         group: true,
         funnelStage: true,
         market: true,
+        approvalStatus: true,
+        updatedAt: true,
         tags: {
           select: {
             tag: true,
@@ -895,6 +898,21 @@ export class PostsRepository {
           },
         },
       },
+    });
+  }
+
+  updateApprovalStatus(
+    postId: string,
+    data: {
+      approvalStatus: ApprovalStatus;
+      approvedBy: string | null;
+      approvedAt: Date | null;
+      rejectionReason: string | null;
+    }
+  ) {
+    return this._post.model.post.update({
+      where: { id: postId },
+      data,
     });
   }
 }

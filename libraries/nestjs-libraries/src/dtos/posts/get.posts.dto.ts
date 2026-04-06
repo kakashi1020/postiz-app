@@ -4,7 +4,7 @@ import {
   IsDateString,
   IsEnum,
 } from 'class-validator';
-import { FunnelStage, Market } from '@prisma/client';
+import { ApprovalStatus, FunnelStage, Market } from '@prisma/client';
 
 export class GetPostsDto {
   @IsDateString()
@@ -28,4 +28,8 @@ export class GetPostsDto {
   @IsOptional()
   @IsString()
   projectId?: string;
+
+  @IsOptional()
+  @IsEnum(ApprovalStatus)
+  approvalStatus?: ApprovalStatus;
 }

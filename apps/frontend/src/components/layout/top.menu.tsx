@@ -5,6 +5,7 @@ import { useUser } from '@gitroom/frontend/components/layout/user.context';
 import { useVariables } from '@gitroom/react/helpers/variable.context';
 import { useT } from '@gitroom/react/translation/get.transation.service.client';
 import { useFetch } from '@gitroom/helpers/utils/custom.fetch';
+import useSWR from 'swr';
 import { MenuItem } from '@gitroom/frontend/components/new-layout/menu-item';
 
 interface MenuItemInterface {
@@ -15,12 +16,30 @@ interface MenuItemInterface {
   hide?: boolean;
   requireBilling?: boolean;
   onClick?: () => void;
+  badge?: number;
 }
+
+const usePendingApprovalCount = () => {
+  const fetch = useFetch();
+  const load = useCallback(async () => {
+    const res = await fetch('/posts?approvalStatus=PENDING&startDate=2000-01-01T00:00:00Z&endDate=2099-12-31T23:59:59Z');
+    const data = await res.json();
+    return (data?.posts || []).length;
+  }, []);
+  return useSWR<number>('approval-pending-count', load, {
+    revalidateOnFocus: true,
+    refreshInterval: 60000,
+    revalidateIfStale: true,
+    refreshWhenOffline: false,
+    refreshWhenHidden: false,
+  });
+};
 
 export const useMenuItem = () => {
   const { isGeneral } = useVariables();
   const t = useT();
   const fetch = useFetch();
+  const { data: pendingCount } = usePendingApprovalCount();
 
   const handleAgentMediaClick = useCallback(async () => {
     try {
@@ -55,6 +74,29 @@ export const useMenuItem = () => {
         </svg>
       ),
       path: '/launches',
+    },
+    {
+      name: t('approvals', 'Approvals'),
+      icon: (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+        >
+          <path
+            d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      ),
+      path: '/approvals',
+      badge: pendingCount || 0,
+      hide: !isGeneral,
     },
     {
       name: 'Agent',
@@ -348,6 +390,7 @@ export const TopMenu: FC = () => {
                   icon={item.icon}
                   key={item.name}
                   onClick={item.onClick}
+                  badge={item.badge}
                 />
               ))
         }

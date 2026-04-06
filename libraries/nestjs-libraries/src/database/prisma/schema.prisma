@@ -434,6 +434,10 @@ model Post {
   funnelStage                FunnelStage?
   market                     Market?
   projectId                  String?
+  approvalStatus             ApprovalStatus?
+  approvedBy                 String?
+  approvedAt                 DateTime?
+  rejectionReason            String?
   createdAt                  DateTime                  @default(now())
   updatedAt                  DateTime                  @updatedAt
   deletedAt                  DateTime?
@@ -467,6 +471,7 @@ model Post {
   @@index([funnelStage])
   @@index([market])
   @@index([projectId])
+  @@index([approvalStatus])
 }
 
 model Notifications {
@@ -987,6 +992,13 @@ enum Market {
   KR
   SG
   MY
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CHANGES_REQUESTED
 }
 
 model Announcement {
