@@ -235,6 +235,27 @@ export const useMenuItem = () => {
       ),
       path: '/third-party',
     },
+    {
+      name: t('usage', 'Usage'),
+      icon: (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+        >
+          <path
+            d="M12 20V10M18 20V4M6 20V16"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      ),
+      path: '/usage',
+    },
   ] satisfies MenuItemInterface[] as MenuItemInterface[];
 
   const secondMenu = [
