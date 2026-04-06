@@ -44,8 +44,11 @@ model Organization {
   oauthApp            OAuthApp[]
   oauthAuthorizations OAuthAuthorization[]
   projects            Project[]
-  usageTracking       UsageTracking[]
-  budgetConfigs       BudgetConfig[]
+  usageTracking            UsageTracking[]
+  budgetConfigs            BudgetConfig[]
+  postAnalyticsSnapshots   PostAnalyticsSnapshot[]
+  accountAnalyticsSnaps    AccountAnalyticsSnapshot[]
+  outlierAlerts            OutlierAlert[]
 
   @@index([apiKey])
   @@index([streakSince])
@@ -64,8 +67,11 @@ model Project {
   organization       Organization      @relation(fields: [organizationId], references: [id])
   posts              Post[]
   contentStrategies  ContentStrategy[]
-  usageTracking      UsageTracking[]
-  budgetConfigs      BudgetConfig[]
+  usageTracking            UsageTracking[]
+  budgetConfigs            BudgetConfig[]
+  postAnalyticsSnapshots   PostAnalyticsSnapshot[]
+  accountAnalyticsSnaps    AccountAnalyticsSnapshot[]
+  outlierAlerts            OutlierAlert[]
 
   @@index([organizationId])
   @@index([deletedAt])
@@ -363,7 +369,10 @@ model Integration {
   webhooks              IntegrationsWebhooks[]
   orderItems            OrderItems[]
   plugs                 Plugs[]
-  posts                 Post[]
+  posts                      Post[]
+  postAnalyticsSnapshots     PostAnalyticsSnapshot[]
+  accountAnalyticsSnapshots  AccountAnalyticsSnapshot[]
+  outlierAlerts              OutlierAlert[]
 
   @@unique([organizationId, internalId])
   @@index([rootInternalId])
@@ -458,6 +467,8 @@ model Post {
   submittedForOrganization   Organization?             @relation("submittedForOrg", fields: [submittedForOrganizationId], references: [id])
   project                    Project?                  @relation(fields: [projectId], references: [id])
   tags                       TagsPosts[]
+  analyticsSnapshots         PostAnalyticsSnapshot[]
+  outlierAlerts              OutlierAlert[]
 
   @@index([group])
   @@index([deletedAt])
@@ -1126,4 +1137,67 @@ model BudgetConfig {
 
   @@unique([projectId, service])
   @@index([organizationId])
+}
+
+model PostAnalyticsSnapshot {
+  id             String       @id @default(uuid())
+  postId         String
+  organizationId String
+  integrationId  String
+  projectId      String?
+  metric         String
+  value          Int
+  fetchedAt      DateTime     @default(now())
+  post           Post         @relation(fields: [postId], references: [id])
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  integration    Integration  @relation(fields: [integrationId], references: [id])
+  project        Project?     @relation(fields: [projectId], references: [id])
+
+  @@index([postId, metric, fetchedAt])
+  @@index([organizationId, fetchedAt])
+  @@index([integrationId, metric])
+}
+
+model AccountAnalyticsSnapshot {
+  id             String       @id @default(uuid())
+  organizationId String
+  integrationId  String
+  projectId      String?
+  metric         String
+  value          Int
+  date           DateTime
+  fetchedAt      DateTime     @default(now())
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  integration    Integration  @relation(fields: [integrationId], references: [id])
+  project        Project?     @relation(fields: [projectId], references: [id])
+
+  @@unique([integrationId, metric, date])
+  @@index([organizationId, date])
+  @@index([integrationId, metric, date])
+}
+
+model OutlierAlert {
+  id                  String       @id @default(uuid())
+  postId              String
+  integrationId       String
+  organizationId      String
+  projectId           String?
+  market              String?
+  platform            String?
+  followerCountAtTime Int
+  viewCount           Int
+  multiplier          Float
+  status              String       @default("DETECTED")
+  analysisResult      Json?
+  doubleDownDrafts    Json?
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+  post                Post         @relation(fields: [postId], references: [id])
+  integration         Integration  @relation(fields: [integrationId], references: [id])
+  organization        Organization @relation(fields: [organizationId], references: [id])
+  project             Project?     @relation(fields: [projectId], references: [id])
+
+  @@index([organizationId, status])
+  @@index([projectId, status])
+  @@index([postId])
 }

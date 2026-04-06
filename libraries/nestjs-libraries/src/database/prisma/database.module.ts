@@ -51,6 +51,8 @@ import { StrategyRepository } from '@gitroom/nestjs-libraries/strategy/strategy.
 import { StrategyService } from '@gitroom/nestjs-libraries/strategy/strategy.service';
 import { UsageRepository } from '@gitroom/nestjs-libraries/usage/usage.repository';
 import { UsageService } from '@gitroom/nestjs-libraries/usage/usage.service';
+import { AnalyticsRepository } from '@gitroom/nestjs-libraries/analytics/analytics.repository';
+import { AnalyticsService } from '@gitroom/nestjs-libraries/analytics/analytics.service';
 
 @Global()
 @Module({
@@ -111,6 +113,8 @@ import { UsageService } from '@gitroom/nestjs-libraries/usage/usage.service';
     StrategyService,
     UsageRepository,
     UsageService,
+    AnalyticsRepository,
+    AnalyticsService,
   ],
   get exports() {
     return this.providers;
