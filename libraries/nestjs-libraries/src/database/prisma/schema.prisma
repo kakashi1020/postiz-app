@@ -44,6 +44,8 @@ model Organization {
   oauthApp            OAuthApp[]
   oauthAuthorizations OAuthAuthorization[]
   projects            Project[]
+  usageTracking       UsageTracking[]
+  budgetConfigs       BudgetConfig[]
 
   @@index([apiKey])
   @@index([streakSince])
@@ -62,6 +64,8 @@ model Project {
   organization       Organization      @relation(fields: [organizationId], references: [id])
   posts              Post[]
   contentStrategies  ContentStrategy[]
+  usageTracking      UsageTracking[]
+  budgetConfigs      BudgetConfig[]
 
   @@index([organizationId])
   @@index([deletedAt])
@@ -1085,4 +1089,41 @@ model MonthlyContentPlan {
 
   @@index([strategyId])
   @@index([month, year])
+}
+
+model UsageTracking {
+  id               String       @id @default(uuid())
+  projectId        String
+  organizationId   String
+  service          String
+  operation        String
+  market           String?
+  platform         String?
+  unitsUsed        Float
+  estimatedCostUsd Float
+  metadata         Json?
+  createdAt        DateTime     @default(now())
+  project          Project      @relation(fields: [projectId], references: [id])
+  organization     Organization @relation(fields: [organizationId], references: [id])
+
+  @@index([projectId])
+  @@index([organizationId])
+  @@index([service])
+  @@index([createdAt])
+}
+
+model BudgetConfig {
+  id               String       @id @default(uuid())
+  projectId        String
+  organizationId   String
+  service          String
+  monthlyCapUsd    Float
+  warningThreshold Float        @default(0.8)
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  project          Project      @relation(fields: [projectId], references: [id])
+  organization     Organization @relation(fields: [organizationId], references: [id])
+
+  @@unique([projectId, service])
+  @@index([organizationId])
 }
