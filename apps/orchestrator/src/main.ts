@@ -14,8 +14,13 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableShutdownHooks();
   const port = process.env.ORCHESTRATOR_PORT || 3002;
-  await app.listen(port);
-  console.log(`Orchestrator health check listening on port ${port}`);
+
+  try {
+    await app.listen(port);
+    console.log(`Orchestrator health check listening on port ${port}`);
+  } catch (e) {
+    console.error(`Orchestrator failed to start on port ${port}`, e);
+  }
 }
 
 

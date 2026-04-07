@@ -1,9 +1,11 @@
-import { Global, Injectable, Module, OnModuleInit } from '@nestjs/common';
+import { Global, Injectable, Logger, Module, OnModuleInit } from '@nestjs/common';
 import { TemporalService } from 'nestjs-temporal-core';
 import { Connection } from '@temporalio/client';
 
 @Injectable()
 export class TemporalRegister implements OnModuleInit {
+  private readonly logger = new Logger(TemporalRegister.name);
+
   constructor(private _client: TemporalService) {}
 
   async onModuleInit(): Promise<void> {
@@ -11,7 +13,14 @@ export class TemporalRegister implements OnModuleInit {
       return;
     }
     const connection = this._client?.client?.getRawClient()
-      ?.connection as Connection;
+      ?.connection as Connection | undefined;
+
+    if (!connection) {
+      this.logger.warn(
+        'Temporal client connection not available — skipping search attribute registration'
+      );
+      return;
+    }
 
     const { customAttributes } =
       await connection.operatorService.listSearchAttributes({

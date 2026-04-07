@@ -8,6 +8,7 @@ export const getTemporalModule = (
 ) => {
   return TemporalModule.register({
     isGlobal: true,
+    allowConnectionFailure: true,
     connection: {
       address: process.env.TEMPORAL_ADDRESS || 'localhost:7233',
       ...process.env.TEMPORAL_TLS === 'true' ? {tls: true} : {},
